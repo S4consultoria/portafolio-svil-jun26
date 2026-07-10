@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portafolio SVIL · S4 Consultoría</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.12.7/Recharts.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Calibri','Segoe UI',system-ui,sans-serif;background:#F5F0E6;color:#1A2540}
+button{font-family:inherit}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState}=React;
+const {PieChart,Pie,Cell,ResponsiveContainer,BarChart,Bar,XAxis,YAxis,Tooltip,CartesianGrid,Legend}=Recharts;
+
+const C={navy:"#1A2540",navyMid:"#2D3D63",brown:"#7B5B3A",brownLight:"#A07A50",gold:"#C9A96E",beige:"#E8DCC8",cream:"#F5F0E6",white:"#FFFFFF",green:"#2E7D32",greenL:"#4CAF50",red:"#C62828",gray:"#8A8A8A",grayL:"#B0B0B0"};
+const AC={"Caja y Liquidez":"#C9A96E","Renta Fija":"#1A2540","Renta Variable":"#7B5B3A",Alternativos:"#A07A50"};
+const fmt=(v,d=0)=>v==null||v==="-"?"—":new Intl.NumberFormat("en-US",{minimumFractionDigits:d,maximumFractionDigits:d}).format(v);
+const pct=(v,d=1)=>v==null||v==="-"?"—":(v*100).toFixed(d)+"%";
+const sign=v=>(v>=0?"+":"")+fmt(v);
+const signPct=v=>(v>=0?"+":"")+pct(v);
+
+const assetClasses=[
+{name:"Caja y Liquidez",principal:656182.09,position:664068.05,weight:0.0727,retExpected:0.0263,retPessimist:0.0064,r2025:0.0273,r2024:0.0222,r2023:0.0099,duration:0.34,
+holdings:[{name:"Cuentas de Ahorro (USD)",desc:"Liquidez",pos:412985.25,wt:0.0478,risk:"BBB",ret:"1.5%"},{name:"Cuentas PEN",desc:"Liquidez soles",pos:23294.71,wt:0.0026,risk:"BBB",ret:"1.5%"},{name:"FDF CC Duración Obj. LATAM",desc:"RF corto plazo LATAM",pos:227788.09,wt:0.0250,risk:"BBB-",ret:"4.8%"}]},
+{name:"Renta Fija",principal:3422215.73,position:3767765.89,weight:0.4127,retExpected:0.0593,retPessimist:-0.0129,r2025:0.0634,r2024:0.0508,r2023:0.0498,duration:4.28,
+holdings:[{name:"Ecopetrol 8.625% 2029",desc:"Petróleo & gas",pos:131960.88,wt:0.0145,risk:"BB",ret:"6.1%",coupon:"8.63%"},{name:"BCP 6.45% 2035",desc:"Banca peruana",pos:190725.30,wt:0.0209,risk:"BBB",ret:"6.3%",coupon:"6.45%"},{name:"Sura Asset Mgmt 6.35% 2032",desc:"Gestión de activos",pos:131812.53,wt:0.0144,risk:"BBB",ret:"5.2%",coupon:"6.35%"},{name:"Interbank 7.625% 2034",desc:"Banca peruana",pos:129772.33,wt:0.0142,risk:"BB",ret:"6.9%",coupon:"7.63%"},{name:"Energía Bogotá 7.85% 2033",desc:"Gas natural",pos:174402.88,wt:0.0191,risk:"BBB-",ret:"5.6%",coupon:"7.85%"},{name:"CC Deuda Corp LATAM HY",desc:"FI corp emergentes HY",pos:279917.31,wt:0.0307,risk:"BB/B",ret:"8.5%",coupon:"9.0%"},{name:"PIMCO Income Fund",desc:"FI multisector global",pos:786183.38,wt:0.0861,risk:"BBB",ret:"5.9%",coupon:"6.98%"},{name:"Moneda Patria HY LATAM",desc:"FI activa HY LATAM",pos:320000.00,wt:0.0351,risk:"BB+",ret:"8.0%"},{name:"Candriam Global HY",desc:"FI corp global HY",pos:132531.39,wt:0.0145,risk:"BB-",ret:"6.0%",coupon:"6.06%"},{name:"Principal Preferred Sec.",desc:"FI híbrida preferred",pos:434535.19,wt:0.0476,risk:"BBB",ret:"5.2%",coupon:"5.7%"},{name:"iShares US Short Dur ETF",desc:"FI corp EEUU CP IG",pos:225677.83,wt:0.0247,risk:"A-",ret:"4.3%"},{name:"iShares Treasury 3-7Y",desc:"FI soberana EEUU media",pos:104902.92,wt:0.0115,risk:"AAA",ret:"3.9%"},{name:"iShares Treasury 7-10Y",desc:"FI soberana EEUU larga",pos:99206.40,wt:0.0109,risk:"AAA",ret:"4.2%"},{name:"iShares USD Corp Bond",desc:"FI corp EEUU IG",pos:154868.61,wt:0.0170,risk:"A-",ret:"5.0%"},{name:"iShares Global HY Corp",desc:"FI corp HY global",pos:198980.44,wt:0.0218,risk:"BB",ret:"5.0%"},{name:"iShares JPM EM Corp",desc:"FI corp emergentes IG",pos:272288.50,wt:0.0298,risk:"BBB-",ret:"5.7%"}]},
+{name:"Renta Variable",principal:2253858.95,position:2677881.71,weight:0.2933,retExpected:0.1079,retPessimist:-0.0823,r2025:0.1619,r2024:0.1376,r2023:0.0695,duration:0.88,
+holdings:[{name:"CC Latin American Equity",desc:"RV emergente Latam",pos:121175.00,wt:0.0133,risk:"BB",ret:"11.0%"},{name:"Janus Henderson Pan European",desc:"RV Europa desarrollada",pos:119527.00,wt:0.0131,risk:"A",ret:"13.0%"},{name:"JPM Global Focus",desc:"RV global activa core",pos:286828.16,wt:0.0314,risk:"BBB",ret:"11.0%"},{name:"Franklin Innovation",desc:"RV tech / growth",pos:252211.42,wt:0.0276,risk:"B",ret:"12.0%"},{name:"iShares MSCI World Quality",desc:"RV global factor calidad",pos:312162.31,wt:0.0342,risk:"A-",ret:"11.5%"},{name:"WisdomTree US Quality Growth",desc:"RV EEUU growth calidad",pos:169565.05,wt:0.0186,risk:"BBB+",ret:"13.0%"},{name:"SPDR S&P 500 ETF",desc:"RV EEUU core large cap",pos:327085.25,wt:0.0358,risk:"A",ret:"14.5%"},{name:"iShares MSCI EAFE",desc:"RV desarrollados ex EEUU",pos:130784.92,wt:0.0143,risk:"A-",ret:"8.5%"},{name:"iShares LATAM 40 ETF",desc:"RV emergente",pos:49599.27,wt:0.0054,risk:"BB+",ret:"8.0%"},{name:"iShares MSCI EM",desc:"RV emergente global",pos:165073.33,wt:0.0181,risk:"BB+",ret:"5.5%"},{name:"Nota RANGE AC EQ CCXXII 8%",desc:"Autocall s/ acciones",pos:202460.00,wt:0.0222,risk:"BBB+",ret:"8.0%",coupon:"8.0%"},{name:"Nota RANGE AC EQ CCXXXIX 10.8%",desc:"Autocall s/ acciones",pos:202020.00,wt:0.0221,risk:"A-",ret:"10.8%",coupon:"10.8%"},{name:"Nota SUP RET US EQ VIII",desc:"Estruc. s/ RV EEUU",pos:130500.00,wt:0.0143,risk:"A+",ret:"10.0%"},{name:"Nota SUP RET EURSTX XXVI 8%",desc:"Estruc. s/ Europa",pos:106500.00,wt:0.0117,risk:"BBB+",ret:"8.0%",coupon:"8.0%"},{name:"Nota SUP RET EURSTX XXX 8.8%",desc:"Estruc. s/ Europa",pos:102390.00,wt:0.0112,risk:"BBB+",ret:"8.8%",coupon:"8.8%"}]},
+{name:"Alternativos",principal:1787672.42,position:2019554.00,weight:0.2212,retExpected:0.0916,retPessimist:-0.0306,r2025:0.1127,r2024:0.0857,r2023:0.0694,duration:0.30,
+holdings:[{name:"Hines Global Income",desc:"Inmobiliario global",pos:262490.13,wt:0.0288,risk:"BBB",ret:"9.0%"},{name:"Core Capital Edifica VI",desc:"Deuda estruc. inmob.",pos:300000.00,wt:0.0329,risk:"BB",ret:"8.0%",coupon:"8.0%"},{name:"SPDR Gold Trust",desc:"Oro / cobertura macro",pos:154351.22,wt:0.0169,risk:"BBB",ret:"5.0%"},{name:"KKR Private Markets E",desc:"Private equity global",pos:295200.00,wt:0.0323,risk:"B",ret:"13.5%"},{name:"StepStone Priv. Mkt G",desc:"Private markets diversif.",pos:308152.66,wt:0.0338,risk:"B",ret:"11.0%"},{name:"FI CC Crédito Privado",desc:"Crédito privado corp.",pos:201310.70,wt:0.0221,risk:"BB",ret:"8.0%",coupon:"8.0%"},{name:"Monroe Capital Income",desc:"Crédito privado directo",pos:181594.20,wt:0.0199,risk:"BB",ret:"8.0%",coupon:"10.0%"},{name:"BlackRock Priv Credit C",desc:"Crédito privado ilíquido",pos:316455.09,wt:0.0347,risk:"BB",ret:"8.0%",coupon:"9.8%"}]}
+];
+
+const totalAUM=9129269.65,totalPrincipal=8119929.19,totalGain=totalAUM-totalPrincipal,totalReturn=totalGain/totalPrincipal;
+const historicalReturns=[
+{year:"2023","Caja y Liquidez":0.99,"Renta Fija":4.98,"Renta Variable":6.95,Alternativos:6.94,Portafolio:5.70},
+{year:"2024","Caja y Liquidez":2.22,"Renta Fija":5.08,"Renta Variable":13.76,Alternativos:8.57,Portafolio:8.19},
+{year:"2025","Caja y Liquidez":2.73,"Renta Fija":6.34,"Renta Variable":16.19,Alternativos:11.27,Portafolio:10.06}
+];
+const durationBuckets=[{name:"0-1Y",value:436279.96,pct:4.8},{name:"1-3Y",value:1291836.36,pct:14.2},{name:"3-5Y",value:3189337.40,pct:34.9},{name:"5-7Y",value:423702.21,pct:4.6},{name:"7Y+",value:254075.01,pct:2.8},{name:"S/D",value:3534038.71,pct:38.7}];
+const structureData=[{name:"Fondos Terceros",value:4197019.32,pct:46.0},{name:"ETFs",value:2364546.05,pct:25.9},{name:"Notas Estruc.",value:743870.00,pct:8.1},{name:"Bonos Corp.",value:758673.92,pct:8.3},{name:"FM Credicorp",value:628880.40,pct:6.9},{name:"Cuentas",value:436279.96,pct:4.8}];
+const SC=["#1A2540","#7B5B3A","#C9A96E","#A07A50","#2D3D63","#8A8A8A"];
+
+const varAC=[
+{name:"Caja y Liquidez",may:369766.10,jun:664068.05,dAA:293639.14,dAApct:0.7941,dVal:662.80,dValpct:0.0018,dAUM:294301.95,dAUMpct:0.7959,retAcum:0.0120},
+{name:"Renta Fija",may:4052515.38,jun:3767765.89,dAA:-307635.42,dAApct:-0.0759,dVal:22885.93,dValpct:0.0056,dAUM:-284749.49,dAUMpct:-0.0703,retAcum:0.1010},
+{name:"Renta Variable",may:2637384.62,jun:2677881.71,dAA:50024.70,dAApct:0.0190,dVal:-9527.61,dValpct:-0.0036,dAUM:40497.09,dAUMpct:0.0154,retAcum:0.1881},
+{name:"Notas Estructuradas",may:736504.00,jun:743870.00,dAA:0,dAApct:0,dVal:7366.00,dValpct:0.0100,dAUM:7366.00,dAUMpct:0.0100,retAcum:0.0332},
+{name:"Alternativos",may:1723731.60,jun:2019554.00,dAA:300000.00,dAApct:0.1740,dVal:-4177.60,dValpct:-0.0024,dAUM:295822.40,dAUMpct:0.1716,retAcum:0.1297}
+];
+const varInst=[
+{ac:"Caja y Liquidez",name:"Primera Cuenta USD",may:105289.11,jun:58023.23,dVal:0,dAA:-47265.88},
+{ac:"Caja y Liquidez",name:"Cuenta 1000116428",may:12446.86,jun:350349.00,dVal:0,dAA:337902.14},
+{ac:"Caja y Liquidez",name:"Cuenta Sueldo PEN",may:19336.18,jun:22507.36,dVal:56.87,dAA:3114.31},
+{ac:"Renta Fija",name:"Ecopetrol 8.625% 2029",may:130109.41,jun:131960.88,dVal:1851.47,dAA:0},
+{ac:"Renta Fija",name:"BCP 6.45% 2035",may:188640.00,jun:190725.30,dVal:2085.30,dAA:0},
+{ac:"Renta Fija",name:"Sura Asset Mgmt 6.35% 2032",may:130608.34,jun:131812.53,dVal:1204.19,dAA:0},
+{ac:"Renta Fija",name:"Interbank 7.625% 2034",may:129127.43,jun:129772.33,dVal:644.90,dAA:0},
+{ac:"Renta Fija",name:"Energía Bogotá 7.85% 2033",may:170809.56,jun:174402.88,dVal:3593.32,dAA:0},
+{ac:"Renta Fija",name:"CC Deuda Corp LATAM HY",may:277941.85,jun:279917.31,dVal:1975.46,dAA:0},
+{ac:"Renta Fija",name:"PIMCO Income Fund",may:777999.69,jun:786183.38,dVal:8183.69,dAA:0},
+{ac:"Renta Fija",name:"Moneda Patria HY LATAM",may:0,jun:320000.00,dVal:0,dAA:320000},
+{ac:"Renta Fija",name:"Candriam Global HY",may:430144.00,jun:132531.39,dVal:0,dAA:-297612.61},
+{ac:"Renta Fija",name:"Nomura Global Dyn Bond",may:330022.81,jun:0,dVal:0,dAA:-330022.81},
+{ac:"Renta Fija",name:"Principal Preferred Sec.",may:433002.84,jun:434535.19,dVal:1532.35,dAA:0},
+{ac:"Renta Fija",name:"iShares US Short Dur",may:225147.66,jun:225677.83,dVal:530.17,dAA:0},
+{ac:"Renta Fija",name:"iShares Treasury 3-7Y",may:104763.84,jun:104902.92,dVal:139.08,dAA:0},
+{ac:"Renta Fija",name:"iShares Treasury 7-10Y",may:98758.40,jun:99206.40,dVal:448.00,dAA:0},
+{ac:"Renta Fija",name:"iShares USD Corp Bond",may:154333.66,jun:154868.61,dVal:534.95,dAA:0},
+{ac:"Renta Fija",name:"iShares Global HY Corp",may:200055.08,jun:198980.44,dVal:-1074.64,dAA:0},
+{ac:"Renta Fija",name:"iShares JPM EM Corp",may:271050.81,jun:272288.50,dVal:1237.69,dAA:0},
+{ac:"Renta Variable",name:"CC Latin American Equity",may:123710.65,jun:121175.00,dVal:-2535.65,dAA:0},
+{ac:"Renta Variable",name:"Janus Henderson Pan European",may:116540.63,jun:119527.00,dVal:2986.37,dAA:0},
+{ac:"Renta Variable",name:"JPM Global Focus",may:290823.31,jun:286828.16,dVal:-3995.15,dAA:0},
+{ac:"Renta Variable",name:"Franklin Innovation",may:258523.98,jun:252211.42,dVal:-6312.56,dAA:0},
+{ac:"Renta Variable",name:"iShares MSCI World Quality",may:308640.88,jun:312162.31,dVal:3521.43,dAA:0},
+{ac:"Renta Variable",name:"WisdomTree US Quality Growth",may:173827.92,jun:169565.05,dVal:-4262.87,dAA:0},
+{ac:"Renta Variable",name:"SPDR S&P 500 ETF",may:331338.25,jun:327085.25,dVal:-4253.00,dAA:0},
+{ac:"Renta Variable",name:"iShares MSCI EAFE",may:131943.20,jun:130784.92,dVal:-1158.28,dAA:0},
+{ac:"Renta Variable",name:"iShares LATAM 40 ETF",may:0,jun:49599.27,dVal:-425.43,dAA:50024.70},
+{ac:"Renta Variable",name:"iShares MSCI EM",may:165531.80,jun:165073.33,dVal:-458.47,dAA:0},
+{ac:"Notas Estructuradas",name:"RANGE AC EQ CCXXII 8%",may:196460,jun:202460,dVal:6000,dAA:0},
+{ac:"Notas Estructuradas",name:"RANGE AC EQ CCXXXIX 10.8%",may:205900,jun:202020,dVal:-3880,dAA:0},
+{ac:"Notas Estructuradas",name:"SUP RET US EQ VIII",may:127824,jun:130500,dVal:2676,dAA:0},
+{ac:"Notas Estructuradas",name:"SUP RET EURSTX XXVI 8%",may:105950,jun:106500,dVal:550,dAA:0},
+{ac:"Notas Estructuradas",name:"SUP RET EURSTX XXX 8.8%",may:100370,jun:102390,dVal:2020,dAA:0},
+{ac:"Alternativos",name:"Hines Global Income",may:260445.66,jun:262490.13,dVal:2044.47,dAA:0},
+{ac:"Alternativos",name:"Core Capital Edifica VI",may:0,jun:300000,dVal:0,dAA:300000},
+{ac:"Alternativos",name:"SPDR Gold Trust",may:174773.28,jun:154351.22,dVal:-20422.06,dAA:0},
+{ac:"Alternativos",name:"KKR Private Markets E",may:291400,jun:295200,dVal:3800,dAA:0},
+{ac:"Alternativos",name:"StepStone Priv. Mkt G",may:304167.84,jun:308152.66,dVal:3984.82,dAA:0}
+];
+const totalMay=varAC.reduce((a,b)=>a+b.may,0),totalJun=varAC.reduce((a,b)=>a+b.jun,0),totalDAA=varAC.reduce((a,b)=>a+b.dAA,0),totalDVal=varAC.reduce((a,b)=>a+b.dVal,0);
+
+function KPI({label,value,sub,positive}){
+return(<div style={{textAlign:"center",padding:"16px 8px"}}><div style={{fontSize:11,textTransform:"uppercase",letterSpacing:1.5,color:C.grayL,marginBottom:6,fontWeight:500}}>{label}</div><div style={{fontSize:28,fontWeight:700,color:C.navy}}>{value}</div>{sub&&<div style={{fontSize:13,color:positive===true?C.green:positive===false?C.red:C.gray,marginTop:4,fontWeight:600}}>{sub}</div>}</div>);
+}
+function GainBar({label,principal,position,color}){
+const gain=position-principal,pctG=principal>0?gain/principal:0,mx=Math.max(principal,position);
+return(<div style={{marginBottom:16}}><div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",marginBottom:6}}><span style={{fontSize:13,fontWeight:600,color:C.navy}}>{label}</span><span style={{fontSize:12,color:gain>=0?C.green:C.red,fontWeight:600}}>{gain>=0?"+":""}${fmt(gain)} ({pct(pctG)})</span></div><div style={{position:"relative",height:24,background:"#EAEAEA",borderRadius:4,overflow:"hidden"}}><div style={{position:"absolute",height:"100%",width:`${(principal/mx)*100}%`,background:"#D0D0D0",borderRadius:4}}/><div style={{position:"absolute",height:"100%",width:`${(position/mx)*100}%`,background:color,borderRadius:4,opacity:0.85}}/></div><div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:C.gray,marginTop:3}}><span>Principal: ${fmt(principal)}</span><span>Posición: ${fmt(position)}</span></div></div>);
+}
+function CTooltip({active,payload,label}){
+if(!active||!payload)return null;
+return(<div style={{background:C.white,border:`1px solid ${C.beige}`,borderRadius:8,padding:"10px 14px",boxShadow:"0 4px 16px rgba(0,0,0,0.1)"}}><div style={{fontWeight:700,marginBottom:6,color:C.navy}}>{label}</div>{payload.map((p,i)=>(<div key={i} style={{fontSize:12,display:"flex",alignItems:"center",gap:6,marginBottom:3}}><div style={{width:8,height:8,borderRadius:"50%",background:p.color}}/><span style={{color:C.gray}}>{p.name}:</span><span style={{fontWeight:600,color:C.navy}}>{p.value}%</span></div>))}</div>);
+}
+
+const tabs=["Resumen","Posiciones","Rendimiento","Variaciones","Estructura"];
+
+function App(){
+const[activeTab,setActiveTab]=useState("Resumen");
+const[expandedClass,setExpandedClass]=useState(null);
+const[varFilter,setVarFilter]=useState("Todos");
+const pieData=assetClasses.map(ac=>({name:ac.name,value:ac.position,pct:ac.weight}));
+const rrData=assetClasses.map(ac=>({name:ac.name,expected:(ac.retExpected*100).toFixed(1),pessimist:(ac.retPessimist*100).toFixed(1)}));
+const filteredVI=varFilter==="Todos"?varInst:varInst.filter(v=>v.ac===varFilter);
+
+return(
+<div style={{background:C.cream,minHeight:"100vh",color:C.navy}}>
+{/* Header */}
+<div style={{background:`linear-gradient(135deg,${C.navy} 0%,${C.navyMid} 100%)`,padding:"32px 24px 24px",color:C.white}}>
+<div style={{maxWidth:1100,margin:"0 auto"}}>
+<div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:12}}>
+<div><div style={{fontSize:11,textTransform:"uppercase",letterSpacing:2,color:C.gold,marginBottom:4,fontWeight:600}}>S4 Inteligencia Financiera Estratégica</div><h1 style={{margin:0,fontSize:28,fontWeight:300,letterSpacing:-0.5}}>Portafolio Institucional SVIL</h1><div style={{fontSize:13,color:C.beige,marginTop:4,opacity:0.8}}>Seguimiento al 30 de junio de 2026</div></div>
+<div style={{textAlign:"right"}}><div style={{fontSize:36,fontWeight:700}}>$ {fmt(totalAUM)}</div><div style={{fontSize:14,color:C.greenL,fontWeight:600}}>+${fmt(totalGain)} ({pct(totalReturn)})</div><div style={{fontSize:11,color:C.beige,opacity:0.6,marginTop:2}}>AUM Total USD</div></div>
+</div></div></div>
+
+{/* Tabs */}
+<div style={{background:C.white,borderBottom:`2px solid ${C.beige}`,position:"sticky",top:0,zIndex:10}}>
+<div style={{maxWidth:1100,margin:"0 auto",display:"flex",gap:0,overflowX:"auto"}}>
+{tabs.map(t=>(<button key={t} onClick={()=>setActiveTab(t)} style={{padding:"14px 20px",border:"none",background:"none",cursor:"pointer",fontSize:13,fontWeight:activeTab===t?700:500,color:activeTab===t?C.brown:C.gray,borderBottom:activeTab===t?`3px solid ${C.brown}`:"3px solid transparent",transition:"all 0.2s",whiteSpace:"nowrap"}}>{t}</button>))}
+</div></div>
+
+<div style={{maxWidth:1100,margin:"0 auto",padding:"24px 16px"}}>
+
+{/* RESUMEN */}
+{activeTab==="Resumen"&&(<>
+<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:12,marginBottom:28}}>
+{[{l:"Ret. Esperado 1Y",v:pct(0.0783),p:true},{l:"Ret. Pesimista 1Y",v:pct(-0.0358),p:false},{l:"Duración",v:"2.1 años"},{l:"TER Promedio",v:pct(0.0085)},{l:"Ganancia Total",v:`+$${fmt(totalGain)}`,p:true}].map((k,i)=>(<div key={i} style={{background:C.white,borderRadius:12,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><KPI label={k.l} value={k.v} positive={k.p}/></div>))}
+</div>
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:28}}>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 20px",fontSize:15,fontWeight:700}}>Distribución por Asset Class</h3>
+<ResponsiveContainer width="100%" height={240}><PieChart><Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={95} paddingAngle={3} dataKey="value" stroke="none">{pieData.map((_,i)=><Cell key={i} fill={Object.values(AC)[i]}/>)}</Pie><Tooltip formatter={(v,n)=>[`$${fmt(v)} (${pct(pieData.find(d=>d.name===n)?.pct||0)})`,n]} contentStyle={{borderRadius:8,border:`1px solid ${C.beige}`,fontSize:12}}/></PieChart></ResponsiveContainer>
+<div style={{display:"flex",flexWrap:"wrap",gap:12,justifyContent:"center",marginTop:8}}>{pieData.map((d,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:6,fontSize:12}}><div style={{width:10,height:10,borderRadius:3,background:Object.values(AC)[i]}}/><span style={{color:C.gray}}>{d.name}</span><span style={{fontWeight:700,color:C.navy}}>{pct(d.pct)}</span></div>))}</div>
+</div>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 16px",fontSize:15,fontWeight:700}}>Principal vs Posición Actual</h3>
+{assetClasses.map(ac=><GainBar key={ac.name} label={ac.name} principal={ac.principal} position={ac.position} color={AC[ac.name]}/>)}
+</div></div>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 20px",fontSize:15,fontWeight:700}}>Retornos Históricos (%)</h3>
+<ResponsiveContainer width="100%" height={260}><BarChart data={historicalReturns} barGap={2} barCategoryGap="20%"><CartesianGrid strokeDasharray="3 3" stroke="#eee"/><XAxis dataKey="year" tick={{fontSize:12}}/><YAxis tick={{fontSize:11}} tickFormatter={v=>v+"%"}/><Tooltip content={<CTooltip/>}/><Legend iconType="circle" wrapperStyle={{fontSize:11}}/><Bar dataKey="Caja y Liquidez" fill={AC["Caja y Liquidez"]} radius={[3,3,0,0]}/><Bar dataKey="Renta Fija" fill={AC["Renta Fija"]} radius={[3,3,0,0]}/><Bar dataKey="Renta Variable" fill={AC["Renta Variable"]} radius={[3,3,0,0]}/><Bar dataKey="Alternativos" fill={AC.Alternativos} radius={[3,3,0,0]}/><Bar dataKey="Portafolio" fill={C.green} radius={[3,3,0,0]}/></BarChart></ResponsiveContainer>
+</div></>)}
+
+{/* POSICIONES */}
+{activeTab==="Posiciones"&&(<>{assetClasses.map(ac=>(<div key={ac.name} style={{background:C.white,borderRadius:14,padding:20,marginBottom:16,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><div onClick={()=>setExpandedClass(expandedClass===ac.name?null:ac.name)} style={{cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}><div style={{display:"flex",alignItems:"center",gap:12}}><div style={{width:14,height:14,borderRadius:4,background:AC[ac.name]}}/><span style={{fontSize:16,fontWeight:700}}>{ac.name}</span></div><div style={{textAlign:"right"}}><div style={{fontSize:18,fontWeight:700}}>${fmt(ac.position)}</div><div style={{fontSize:12,color:C.gray}}>{pct(ac.weight)} del portafolio</div></div></div>
+{expandedClass===ac.name&&(<div style={{marginTop:16,overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr style={{borderBottom:`2px solid ${C.beige}`}}>{["Instrumento","Descripción","Posición USD","Peso","Rating","Ret. Esp.","Cupón"].map(h=>(<th key={h} style={{textAlign:h==="Instrumento"||h==="Descripción"?"left":"right",padding:"8px 10px",color:C.gray,fontWeight:600,fontSize:11,textTransform:"uppercase"}}>{h}</th>))}</tr></thead><tbody>{ac.holdings.map((h,i)=>(<tr key={i} style={{borderBottom:`1px solid ${C.cream}`}}><td style={{padding:"10px",fontWeight:600,maxWidth:200,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{h.name}</td><td style={{padding:"10px",color:C.gray,maxWidth:180,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{h.desc}</td><td style={{padding:"10px",textAlign:"right",fontWeight:600,fontFamily:"monospace"}}>${fmt(h.pos)}</td><td style={{padding:"10px",textAlign:"right"}}>{pct(h.wt)}</td><td style={{padding:"10px",textAlign:"right"}}><span style={{display:"inline-block",padding:"2px 8px",borderRadius:4,fontSize:11,fontWeight:700,background:h.risk?.startsWith("A")?"#E8F5E9":h.risk?.startsWith("BBB")?"#FFF8E1":"#FBE9E7",color:h.risk?.startsWith("A")?"#2E7D32":h.risk?.startsWith("BBB")?"#E65100":"#C62828"}}>{h.risk}</span></td><td style={{padding:"10px",textAlign:"right",fontWeight:600}}>{h.ret}</td><td style={{padding:"10px",textAlign:"right",color:C.gray}}>{h.coupon||"—"}</td></tr>))}</tbody></table></div>)}</div>))}</>)}
+
+{/* RENDIMIENTO */}
+{activeTab==="Rendimiento"&&(<>
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:28}}>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 20px",fontSize:15,fontWeight:700}}>Retorno Esperado vs Pesimista (1Y)</h3>
+<ResponsiveContainer width="100%" height={240}><BarChart data={rrData} layout="vertical" barGap={4}><CartesianGrid strokeDasharray="3 3" stroke="#eee" horizontal={false}/><XAxis type="number" tick={{fontSize:11}} tickFormatter={v=>v+"%"} domain={[-10,15]}/><YAxis type="category" dataKey="name" tick={{fontSize:11}} width={100}/><Tooltip formatter={v=>v+"%"} contentStyle={{borderRadius:8,border:`1px solid ${C.beige}`,fontSize:12}}/><Bar dataKey="expected" name="Esperado" fill={C.green} radius={[0,4,4,0]} barSize={14}/><Bar dataKey="pessimist" name="Pesimista" fill={C.red} radius={[0,4,4,0]} barSize={14}/></BarChart></ResponsiveContainer></div>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 20px",fontSize:15,fontWeight:700}}>Retornos Anuales del Portafolio</h3>
+<div style={{display:"flex",flexDirection:"column",gap:16,marginTop:12}}>{[{year:"2023",ret:5.70},{year:"2024",ret:8.19},{year:"2025",ret:10.06}].map(d=>(<div key={d.year}><div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}><span style={{fontSize:13,fontWeight:600,color:C.navy}}>{d.year}</span><span style={{fontSize:14,fontWeight:700,color:C.green}}>+{d.ret}%</span></div><div style={{height:20,background:"#EAEAEA",borderRadius:10,overflow:"hidden"}}><div style={{height:"100%",width:`${Math.max((d.ret/12)*100,5)}%`,background:`linear-gradient(90deg,${C.navy},${C.brown})`,borderRadius:10}}/></div></div>))}</div>
+<div style={{marginTop:20,padding:"14px 16px",background:C.cream,borderRadius:10,display:"flex",justifyContent:"space-between"}}><div><div style={{fontSize:11,color:C.gray,textTransform:"uppercase"}}>Ganancia Acumulada</div><div style={{fontSize:22,fontWeight:700,color:C.green}}>+${fmt(totalGain)}</div></div><div style={{textAlign:"right"}}><div style={{fontSize:11,color:C.gray,textTransform:"uppercase"}}>Retorno Total</div><div style={{fontSize:22,fontWeight:700,color:C.green}}>+{pct(totalReturn)}</div></div></div></div></div>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 16px",fontSize:15,fontWeight:700}}>Matriz Riesgo – Retorno por Asset Class</h3>
+<table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}><thead><tr style={{borderBottom:`2px solid ${C.beige}`}}>{["Asset Class","Peso","Ret. Esperado","Ret. Pesimista","Spread","Duración","2025","2024","2023"].map(h=>(<th key={h} style={{padding:"10px 8px",textAlign:h==="Asset Class"?"left":"center",color:C.gray,fontWeight:600,fontSize:11,textTransform:"uppercase"}}>{h}</th>))}</tr></thead>
+<tbody>{assetClasses.map(ac=>(<tr key={ac.name} style={{borderBottom:`1px solid ${C.cream}`}}><td style={{padding:"12px 8px",fontWeight:600}}><div style={{display:"flex",alignItems:"center",gap:8}}><div style={{width:10,height:10,borderRadius:3,background:AC[ac.name]}}/>{ac.name}</div></td><td style={{textAlign:"center",fontWeight:700}}>{pct(ac.weight)}</td><td style={{textAlign:"center",color:C.green,fontWeight:600}}>{pct(ac.retExpected)}</td><td style={{textAlign:"center",color:ac.retPessimist>=0?C.green:C.red,fontWeight:600}}>{pct(ac.retPessimist)}</td><td style={{textAlign:"center"}}>{pct(ac.retExpected-ac.retPessimist)}</td><td style={{textAlign:"center"}}>{ac.duration.toFixed(1)}Y</td><td style={{textAlign:"center",color:C.green}}>{pct(ac.r2025)}</td><td style={{textAlign:"center",color:C.green}}>{pct(ac.r2024)}</td><td style={{textAlign:"center",color:C.green}}>{pct(ac.r2023)}</td></tr>))}
+<tr style={{borderTop:`2px solid ${C.navy}`,background:C.cream}}><td style={{padding:"12px 8px",fontWeight:800,fontSize:14}}>PORTAFOLIO</td><td style={{textAlign:"center",fontWeight:800}}>100%</td><td style={{textAlign:"center",fontWeight:800,color:C.green}}>{pct(0.0783)}</td><td style={{textAlign:"center",fontWeight:800,color:C.red}}>{pct(-0.0358)}</td><td style={{textAlign:"center",fontWeight:800}}>{pct(0.1141)}</td><td style={{textAlign:"center",fontWeight:800}}>2.1Y</td><td style={{textAlign:"center",fontWeight:800,color:C.green}}>{pct(0.1006)}</td><td style={{textAlign:"center",fontWeight:800,color:C.green}}>{pct(0.0819)}</td><td style={{textAlign:"center",fontWeight:800,color:C.green}}>{pct(0.0570)}</td></tr></tbody></table></div>
+</>)}
+
+{/* VARIACIONES */}
+{activeTab==="Variaciones"&&(<>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)",marginBottom:20}}>
+<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:12}}>
+<h3 style={{margin:0,fontSize:15,fontWeight:700}}>Análisis de Variaciones · Mayo → Junio 2026</h3>
+<div style={{display:"flex",gap:16,fontSize:13}}>
+<div style={{textAlign:"center"}}><div style={{fontSize:11,color:C.gray,textTransform:"uppercase"}}>AUM Mayo</div><div style={{fontWeight:700,fontSize:18}}>${fmt(totalMay)}</div></div>
+<div style={{fontSize:22,color:C.grayL,alignSelf:"center"}}>→</div>
+<div style={{textAlign:"center"}}><div style={{fontSize:11,color:C.gray,textTransform:"uppercase"}}>AUM Junio</div><div style={{fontWeight:700,fontSize:18}}>${fmt(totalJun)}</div></div>
+<div style={{textAlign:"center",background:C.cream,borderRadius:8,padding:"4px 14px"}}><div style={{fontSize:11,color:C.gray}}>Δ Neto</div><div style={{fontWeight:700,fontSize:16,color:(totalJun-totalMay)>=0?C.green:C.red}}>{sign(totalJun-totalMay)}</div></div>
+</div></div></div>
+
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:20}}>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 4px",fontSize:14,fontWeight:700}}>Δ por Asset Allocation</h3>
+<div style={{fontSize:12,color:C.gray,marginBottom:16}}>Movimientos de capital (compras, ventas, rebalanceos)</div>
+<div style={{display:"flex",flexDirection:"column",gap:10}}>
+{varAC.map(v=>{if(v.dAA===0)return null;const maxAbs=Math.max(...varAC.map(x=>Math.abs(x.dAA)));const w=Math.max((Math.abs(v.dAA)/maxAbs)*100,4);return(<div key={v.name}><div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}><span style={{fontSize:12,fontWeight:600}}>{v.name}</span><span style={{fontSize:12,fontWeight:700,color:v.dAA>=0?C.green:C.red}}>{sign(v.dAA)}</span></div><div style={{height:16,background:"#f0f0f0",borderRadius:8,overflow:"hidden",display:"flex",justifyContent:v.dAA>=0?"flex-start":"flex-end"}}><div style={{width:`${w}%`,height:"100%",background:v.dAA>=0?C.green:C.red,borderRadius:8,opacity:0.7}}/></div></div>);})}
+<div style={{borderTop:`2px solid ${C.beige}`,paddingTop:10,display:"flex",justifyContent:"space-between"}}><span style={{fontSize:13,fontWeight:800}}>Total Δ Allocation</span><span style={{fontSize:14,fontWeight:800,color:totalDAA>=0?C.green:C.red}}>{sign(totalDAA)}</span></div></div></div>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 4px",fontSize:14,fontWeight:700}}>Δ por Valorización</h3>
+<div style={{fontSize:12,color:C.gray,marginBottom:16}}>Cambios en precio de mercado (mark-to-market)</div>
+<div style={{display:"flex",flexDirection:"column",gap:10}}>
+{varAC.map(v=>{const maxAbs=Math.max(...varAC.map(x=>Math.abs(x.dVal)));const w=maxAbs>0?Math.max((Math.abs(v.dVal)/maxAbs)*100,4):4;return(<div key={v.name}><div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}><span style={{fontSize:12,fontWeight:600}}>{v.name}</span><span style={{fontSize:12,fontWeight:700,color:v.dVal>=0?C.green:C.red}}>{sign(v.dVal)} <span style={{fontSize:10,color:C.gray}}>({signPct(v.dValpct)})</span></span></div><div style={{height:16,background:"#f0f0f0",borderRadius:8,overflow:"hidden",display:"flex",justifyContent:v.dVal>=0?"flex-start":"flex-end"}}><div style={{width:`${w}%`,height:"100%",background:v.dVal>=0?C.green:C.red,borderRadius:8,opacity:0.7}}/></div></div>);})}
+<div style={{borderTop:`2px solid ${C.beige}`,paddingTop:10,display:"flex",justifyContent:"space-between"}}><span style={{fontSize:13,fontWeight:800}}>Total Δ Valorización</span><span style={{fontSize:14,fontWeight:800,color:totalDVal>=0?C.green:C.red}}>{sign(totalDVal)}</span></div></div></div></div>
+
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)",marginBottom:20}}>
+<h3 style={{margin:"0 0 16px",fontSize:14,fontWeight:700}}>Resumen por Asset Class</h3>
+<div style={{overflowX:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead><tr style={{borderBottom:`2px solid ${C.beige}`}}>{["Asset Class","Mayo","Junio","Δ Allocation","Δ Valorización","Δ AUM Total","Δ% AUM","Ret. Acum."].map(h=>(<th key={h} style={{padding:"8px",textAlign:h==="Asset Class"?"left":"right",color:C.gray,fontWeight:600,fontSize:10,textTransform:"uppercase"}}>{h}</th>))}</tr></thead>
+<tbody>{varAC.map(v=>(<tr key={v.name} style={{borderBottom:`1px solid ${C.cream}`}}><td style={{padding:"10px 8px",fontWeight:600}}><div style={{display:"flex",alignItems:"center",gap:6}}><div style={{width:8,height:8,borderRadius:2,background:AC[v.name]||C.gold}}/>{v.name}</div></td><td style={{textAlign:"right",fontFamily:"monospace"}}>${fmt(v.may)}</td><td style={{textAlign:"right",fontFamily:"monospace",fontWeight:600}}>${fmt(v.jun)}</td><td style={{textAlign:"right",color:v.dAA>=0?C.green:C.red,fontWeight:600}}>{v.dAA!==0?sign(v.dAA):"—"}</td><td style={{textAlign:"right",color:v.dVal>=0?C.green:C.red,fontWeight:600}}>{sign(v.dVal)}</td><td style={{textAlign:"right",color:v.dAUM>=0?C.green:C.red,fontWeight:700}}>{sign(v.dAUM)}</td><td style={{textAlign:"right",color:v.dAUMpct>=0?C.green:C.red,fontWeight:600}}>{signPct(v.dAUMpct)}</td><td style={{textAlign:"right",fontWeight:600,color:C.navy}}>{pct(v.retAcum)}</td></tr>))}
+<tr style={{borderTop:`2px solid ${C.navy}`,background:C.cream}}><td style={{padding:"10px 8px",fontWeight:800}}>TOTAL</td><td style={{textAlign:"right",fontWeight:800,fontFamily:"monospace"}}>${fmt(totalMay)}</td><td style={{textAlign:"right",fontWeight:800,fontFamily:"monospace"}}>${fmt(totalJun)}</td><td style={{textAlign:"right",fontWeight:800,color:C.green}}>{sign(totalDAA)}</td><td style={{textAlign:"right",fontWeight:800,color:totalDVal>=0?C.green:C.red}}>{sign(totalDVal)}</td><td style={{textAlign:"right",fontWeight:800,color:C.green}}>{sign(totalDAA+totalDVal)}</td><td></td><td></td></tr></tbody></table></div></div>
+
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:8}}>
+<h3 style={{margin:0,fontSize:14,fontWeight:700}}>Detalle por Instrumento</h3>
+<div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{["Todos","Caja y Liquidez","Renta Fija","Renta Variable","Notas Estructuradas","Alternativos"].map(f=>(<button key={f} onClick={()=>setVarFilter(f)} style={{padding:"5px 12px",borderRadius:6,border:"none",cursor:"pointer",fontSize:11,fontWeight:600,background:varFilter===f?C.navy:C.cream,color:varFilter===f?C.white:C.gray}}>{f==="Todos"?"Todos":f.replace("Renta ","R.").replace("Caja y Liquidez","Caja").replace("Alternativos","Alt.").replace("Notas Estructuradas","Notas")}</button>))}</div></div>
+<div style={{overflowX:"auto",maxHeight:500,overflowY:"auto"}}><table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}><thead style={{position:"sticky",top:0,background:C.white}}><tr style={{borderBottom:`2px solid ${C.beige}`}}>{["Instrumento","Asset Class","Mayo","Junio","Δ Valorización","Δ Allocation","Δ Neto"].map(h=>(<th key={h} style={{padding:"8px",textAlign:h==="Instrumento"||h==="Asset Class"?"left":"right",color:C.gray,fontWeight:600,fontSize:10,textTransform:"uppercase"}}>{h}</th>))}</tr></thead>
+<tbody>{filteredVI.filter(v=>v.may!==0||v.jun!==0).map((v,i)=>{const net=(v.dVal||0)+(v.dAA||0);const isNew=v.may===0&&v.jun>0;const isExit=v.may>0&&v.jun===0;return(<tr key={i} style={{borderBottom:`1px solid ${C.cream}`,background:isNew?"#E8F5E920":isExit?"#FFEBEE20":"transparent"}}><td style={{padding:"8px",fontWeight:600,maxWidth:200,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{v.name}{isNew&&<span style={{marginLeft:6,fontSize:9,background:"#E8F5E9",color:C.green,padding:"1px 6px",borderRadius:4,fontWeight:700}}>NUEVO</span>}{isExit&&<span style={{marginLeft:6,fontSize:9,background:"#FFEBEE",color:C.red,padding:"1px 6px",borderRadius:4,fontWeight:700}}>SALIDA</span>}</td><td style={{padding:"8px",fontSize:11,color:C.gray}}>{v.ac}</td><td style={{padding:"8px",textAlign:"right",fontFamily:"monospace"}}>{v.may>0?`$${fmt(v.may)}`:"—"}</td><td style={{padding:"8px",textAlign:"right",fontFamily:"monospace",fontWeight:600}}>{v.jun>0?`$${fmt(v.jun)}`:"—"}</td><td style={{padding:"8px",textAlign:"right",color:(v.dVal||0)>=0?C.green:C.red,fontWeight:600}}>{v.dVal?sign(v.dVal):"—"}</td><td style={{padding:"8px",textAlign:"right",color:(v.dAA||0)>=0?(v.dAA===0?C.gray:C.green):C.red,fontWeight:600}}>{v.dAA?sign(v.dAA):"—"}</td><td style={{padding:"8px",textAlign:"right",fontWeight:700,color:net>=0?(net===0?C.gray:C.green):C.red}}>{net!==0?sign(net):"—"}</td></tr>);})}</tbody></table></div></div>
+</>)}
+
+{/* ESTRUCTURA */}
+{activeTab==="Estructura"&&(<>
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:28}}>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 20px",fontSize:15,fontWeight:700}}>Por Tipo de Instrumento</h3>
+<ResponsiveContainer width="100%" height={240}><PieChart><Pie data={structureData} cx="50%" cy="50%" outerRadius={90} dataKey="value" stroke={C.white} strokeWidth={2}>{structureData.map((_,i)=><Cell key={i} fill={SC[i]}/>)}</Pie><Tooltip formatter={v=>`$${fmt(v)}`} contentStyle={{borderRadius:8,fontSize:12}}/></PieChart></ResponsiveContainer>
+<div style={{display:"flex",flexWrap:"wrap",gap:10,justifyContent:"center"}}>{structureData.map((d,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:5,fontSize:11}}><div style={{width:8,height:8,borderRadius:2,background:SC[i]}}/><span>{d.name}</span><span style={{fontWeight:700}}>{d.pct}%</span></div>))}</div></div>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 20px",fontSize:15,fontWeight:700}}>Por Bucket de Duración</h3>
+<ResponsiveContainer width="100%" height={240}><BarChart data={durationBuckets}><CartesianGrid strokeDasharray="3 3" stroke="#eee"/><XAxis dataKey="name" tick={{fontSize:11}}/><YAxis tick={{fontSize:11}} tickFormatter={v=>`$${(v/1e6).toFixed(1)}M`}/><Tooltip formatter={v=>`$${fmt(v)}`} contentStyle={{borderRadius:8,fontSize:12}}/><Bar dataKey="value" fill={C.navy} radius={[6,6,0,0]}>{durationBuckets.map((_,i)=><Cell key={i} fill={i===5?C.grayL:C.navy}/>)}</Bar></BarChart></ResponsiveContainer>
+<div style={{display:"flex",justifyContent:"center",gap:16,marginTop:12}}>{durationBuckets.map((d,i)=>(<div key={i} style={{textAlign:"center",fontSize:11}}><div style={{fontWeight:700}}>{d.pct}%</div><div style={{color:C.gray}}>{d.name}</div></div>))}</div></div></div>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)",marginBottom:28}}>
+<h3 style={{margin:"0 0 16px",fontSize:15,fontWeight:700}}>Distribución por Moneda</h3>
+<div style={{display:"flex",gap:24,alignItems:"center"}}><div style={{flex:1}}><div style={{height:32,borderRadius:16,overflow:"hidden",display:"flex",background:C.beige}}><div style={{width:"99.7%",background:C.navy,display:"flex",alignItems:"center",justifyContent:"center",color:C.white,fontSize:12,fontWeight:700}}>USD 99.7%</div><div style={{width:"0.3%",background:C.gold}}/></div></div><div style={{fontSize:12,color:C.gray,minWidth:140}}><div><strong style={{color:C.navy}}>USD:</strong> ${fmt(9105975)}</div><div><strong style={{color:C.gold}}>PEN:</strong> ${fmt(23295)}</div></div></div></div>
+<div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 16px",fontSize:15,fontWeight:700}}>Gestoras / Custodios</h3>
+{[{name:"Credicorp Capital",pct:"~95%",desc:"Custodia internacional Panamá + local Perú"},{name:"Core Capital",pct:"~3.3%",desc:"Edifica Core VI"},{name:"Moneda Patria",pct:"~3.5%",desc:"HY LATAM USD"}].map((g,i)=>(<div key={i} style={{display:"flex",justifyContent:"space-between",padding:"12px 0",borderBottom:i<2?`1px solid ${C.cream}`:"none"}}><div><div style={{fontWeight:600,fontSize:14}}>{g.name}</div><div style={{fontSize:11,color:C.gray}}>{g.desc}</div></div><div style={{fontSize:15,fontWeight:700,color:C.brown}}>{g.pct}</div></div>))}</div>
+<div style={{background:C.white,borderRadius:14,padding:24,boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}>
+<h3 style={{margin:"0 0 16px",fontSize:15,fontWeight:700}}>Perfil de Riesgo Crediticio</h3>
+{[{rating:"AAA",desc:"Soberano EEUU",color:"#1B5E20",bg:"#E8F5E9"},{rating:"A / A-",desc:"IG alto",color:"#2E7D32",bg:"#E8F5E9"},{rating:"BBB / BBB-",desc:"Investment Grade",color:"#E65100",bg:"#FFF8E1"},{rating:"BB / BB+",desc:"High Yield",color:"#BF360C",bg:"#FBE9E7"},{rating:"B",desc:"Especulativo",color:"#C62828",bg:"#FFEBEE"}].map((r,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom:i<4?`1px solid ${C.cream}`:"none"}}><span style={{display:"inline-block",padding:"3px 10px",borderRadius:6,fontSize:12,fontWeight:800,background:r.bg,color:r.color,minWidth:70,textAlign:"center"}}>{r.rating}</span><span style={{fontSize:13,color:C.gray}}>{r.desc}</span></div>))}</div></div>
+</>)}
+
+</div>
+{/* Footer */}
+<div style={{background:C.navy,padding:"20px 24px",marginTop:32,color:C.beige,fontSize:11,textAlign:"center",opacity:0.8}}><div style={{maxWidth:1100,margin:"0 auto"}}>S4 Inteligencia Financiera Estratégica · contacto@s4consultoria.pe · www.s4consultoria.pe<br/>Este documento es confidencial y para uso exclusivo del cliente. No constituye una recomendación de inversión.</div></div>
+</div>);
+}
+
+ReactDOM.render(<App/>,document.getElementById("root"));
+</script>
+</body>
+</html>
